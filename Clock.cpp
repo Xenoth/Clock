@@ -9,20 +9,14 @@ Clock::Clock()
 
 uint8_t Clock::decToBcd(uint8_t val)
 {
-	return (uint8_t) ((val / 10 * 16) + (val % 10));
+	return (uint8_t)((val/10*16)+(val%10));
 }
 
 uint8_t Clock::bcdToDec(uint8_t val)
 {
-	return (uint8_t) ((val / 16 * 10) + (val % 16));
+	return (uint8_t)((val/16*10)+(val%16));
 }
 
-
-
-inline bool Clock::isDetected()
-{
-	return detected;
-}
 
 
 

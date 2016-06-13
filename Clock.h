@@ -9,6 +9,9 @@ class Clock {
 	private :
 		
 		bool detected;
+
+    uint8_t decToBcd(uint8_t val);
+    uint8_t bcdToDec(uint8_t val);
 	
 	public :
 		
@@ -16,10 +19,7 @@ class Clock {
 	
 		Clock();
 	
-		uint8_t decToBcd(uint8_t val);
-		uint8_t bcdToDec(uint8_t val);
-	
-		inline bool isDetected();
+  	inline bool isDetected(){return detected;}
 	
 		uint8_t getSecond();
 		uint8_t getMinute();
