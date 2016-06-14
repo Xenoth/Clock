@@ -24,7 +24,7 @@ class Clock {
 		uint8_t getSecond();
 		uint8_t getMinute();
 		uint8_t getHour(bool *mode12h, bool *pm);
-		void getCurrentTime(bool *mode12h, bool *pm, uint8_t *hour, uint8_t *minute, uint8_t *second);
+		int getCurrentTime(bool *mode12h, bool *pm, uint8_t *hour, uint8_t *minute, uint8_t *second);
 	
 		bool setSecond(const uint8_t second);
 		bool setMinute(const uint8_t minute);
@@ -34,7 +34,7 @@ class Clock {
 		uint8_t getDayOfMonth();
 		uint8_t getMonth();
 		uint8_t getYear();
-		void getDate(uint8_t *dayOfWeek, uint8_t *dayOfMonth, uint8_t *month, uint8_t *year);
+		int getDate(uint8_t *dayOfWeek, uint8_t *dayOfMonth, uint8_t *month, uint8_t *year);
 		
 		bool setDayOfMonth(const uint8_t dayOfMonth);
 		bool setMonth(const uint8_t month);

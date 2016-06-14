@@ -40,14 +40,12 @@ uint8_t Clock::getMinute()
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x01));
-	Wire.endTransmission();
-
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return 255;
+  }
 	Wire.requestFrom(I2C_ADRESS, 1);
-	if(Wire.available()==0)
-	{
-		detected=false;
-		return 255;
-	}
 	detected=true;
 	return bcdToDec(Wire.read());
 }
@@ -56,14 +54,12 @@ uint8_t Clock::getHour(bool *mode12h, bool *pm)
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x02));
-	Wire.endTransmission();
-
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return 255;
+  }
 	Wire.requestFrom(I2C_ADRESS, 1);
-	if(Wire.available()==0)
-	{
-		detected=false;
-		return 255;
-	}
 	detected=true;
 	uint8_t result=Wire.read();
 
@@ -86,18 +82,16 @@ uint8_t Clock::getHour(bool *mode12h, bool *pm)
 	}
 }
 
-void Clock::getCurrentTime(bool *mode12h, bool *pm, uint8_t *hour, uint8_t *minute, uint8_t *second)
+int Clock::getCurrentTime(bool *mode12h, bool *pm, uint8_t *hour, uint8_t *minute, uint8_t *second)
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x00));
-	Wire.endTransmission();
-
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return 1;
+  }
 	Wire.requestFrom(I2C_ADRESS, 3);
-	if(Wire.available()<3)
-	{
-		detected=false;
-		exit(1);
-	}
 	detected=true;
 
 	*second=bcdToDec(Wire.read());
@@ -130,7 +124,11 @@ bool Clock::setSecond(const uint8_t second)
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x00));
 	Wire.write(decToBcd(second));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return false;
+  }
 	return true;
 }
 
@@ -141,7 +139,11 @@ bool Clock::setMinute(const uint8_t minute)
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x01));
 	Wire.write(decToBcd(minute));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return false;
+  }
 	return true;
 }
 
@@ -170,7 +172,11 @@ bool Clock::setHour(const uint8_t hour, const bool mode12h, const bool pm)
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x02));
 	Wire.write(byteHour);
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return false;
+  }
 	return true;
 }
 
@@ -178,14 +184,13 @@ uint8_t Clock::getDayOfWeek()
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x03));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return false;
+  }
 
 	Wire.requestFrom(I2C_ADRESS,1);
-	if(Wire.available()<1)
-	{
-		detected=false;
-		return 255;
-	}
 	detected=true;
 	return bcdToDec(Wire.read());
 }
@@ -194,14 +199,14 @@ uint8_t Clock::getDayOfMonth()
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x04));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return 255;
+  }
 
 	Wire.requestFrom(I2C_ADRESS,1);
-	if(Wire.available()<1)
-	{
-		detected=false;
-		return 255;
-	}
+	
 	detected=true;
 	return bcdToDec(Wire.read());
 }
@@ -210,14 +215,14 @@ uint8_t Clock::getMonth()
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x05));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return 255;
+  }
 
 	Wire.requestFrom(I2C_ADRESS,1);
-	if(Wire.available()<1)
-	{
-		detected=false;
-		return 255;
-	}
+	
 	detected=true;
 	return bcdToDec((Wire.read())&0b0111111);
 }
@@ -226,14 +231,14 @@ uint8_t Clock::getYear()
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x05));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return 255;
+  }
 
 	Wire.requestFrom(I2C_ADRESS,2);
-	if(Wire.available()<2)
-	{
-		detected=false;
-		return 255;
-	}
+	
 	detected=true;
 	bool century=false;
 	if((Wire.read())&0b1000000)
@@ -244,18 +249,17 @@ uint8_t Clock::getYear()
 	return year;
 }
 
-void Clock::getDate(uint8_t *dayOfWeek, uint8_t *dayOfMonth, uint8_t *month, uint8_t *year)
+int Clock::getDate(uint8_t *dayOfWeek, uint8_t *dayOfMonth, uint8_t *month, uint8_t *year)
 {
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x03));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    exit(1);
+  }
 
 	Wire.requestFrom(I2C_ADRESS, 4);
-	if(Wire.available()<4)
-	{
-		detected=false;
-		exit(1);
-	}
 	detected=true;
 	*dayOfWeek=bcdToDec(Wire.read());
 	*dayOfMonth=bcdToDec(Wire.read());
@@ -276,7 +280,11 @@ bool Clock::setDayOfMonth(const uint8_t dayOfMonth)
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x04));
 	Wire.write(decToBcd(dayOfMonth));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return false;
+  }
 	return true;
 }
 
@@ -286,21 +294,24 @@ bool Clock::setMonth(const uint8_t month)
 		return false;
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x05));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return false;
+  }
 
 	Wire.requestFrom(I2C_ADRESS,1);
-	if(Wire.available()<1)
-	{
-		detected=false;
-		return false;
-	}
 	detected=true;
 	uint8_t oldByte=(Wire.read()&0b1000000);
 
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x05));
 	Wire.write(decToBcd(month) | oldByte);
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+    detected=false;
+    return false;
+  }
 	return true;
 }
 
@@ -313,25 +324,32 @@ bool Clock::setYear(const uint8_t year)
 	{
 		Wire.beginTransmission(I2C_ADRESS);
 		Wire.write(uint8_t(0x05));
-		Wire.endTransmission();
+		if(Wire.endTransmission())
+    {
+      detected=false;
+       return false;
+    }
 
 		Wire.requestFrom(I2C_ADRESS,1);
-		if(Wire.available()<1)
-		{
-			detected=false;
-			return false;
-		}
 		detected=true;
 		uint8_t oldByte=(Wire.read()&0b0111111);
 		yearCopy=yearCopy-100;
 		Wire.beginTransmission(I2C_ADRESS);
 		Wire.write(uint8_t(0x05));
 		Wire.write(0b1000000 | oldByte);
-		Wire.endTransmission();
+		if(Wire.endTransmission())
+    {
+      detected=false;
+       return false;
+    }
 	}
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x06));
 	Wire.write(decToBcd(yearCopy));
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+  {
+      detected=false;
+      return false;
+  }
 	return true;
 }
