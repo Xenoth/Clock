@@ -232,7 +232,7 @@ void loop()
  {
 
    cl.getCurrentTime(&mode12h, &pm, &hour, &minute, &second);
-   if(!cl.isDetected())
+   if(cl.isDetected())
    {
      printClock(second,minute,hour, mode12h, pm);
       if(gb.buttons.held(BTN_A, 4) && locked)
