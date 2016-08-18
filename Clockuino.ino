@@ -205,6 +205,7 @@ uint8_t set_Time(bool alarm)
         gb.sound.playOK();
         if(!alarm)
         {
+          cl.setSecond(0);
           cl.setHour(hour, mode12h, pm);
           cl.setMinute(minute);
           cl.setSecond(second);
@@ -219,11 +220,109 @@ uint8_t set_Time(bool alarm)
   }
 }
 
+int8_t set_Date()
+{
+  uint8_t select=0;
+  cl.getDate(&day_of_week, &day_of_month, &month, &year);
+  while(1)
+  {
+    if(gb.update())
+    {
+      gb.display.cursorX = 5;
+      gb.display.cursorY = 10;
+      gb.display.println((String)((const __FlashStringHelper*)pgm_read_word(week+day_of_week-1))+" "+(String)(day_of_month)+" "+(String)((const __FlashStringHelper*)pgm_read_word(monthes+month-1)));
+      gb.display.cursorY = 20;
+      gb.display.cursorX = 65;
+      gb.display.print(year+2000);
+  
+      if(gb.buttons.pressed(BTN_A))
+      {
+        gb.sound.playOK();
+        cl.setDayOfMonth(day_of_month);
+        cl.setMonth(month);
+        cl.setYear(year);
+        return 0;      
+      }
+      else if(gb.buttons.pressed(BTN_B))
+      {
+        gb.sound.playCancel();
+        return 0;
+      }
+      else if(gb.buttons.pressed(BTN_RIGHT) && select<=3)
+      {
+        gb.sound.playTick();
+        select++;
+      }
+      else if(gb.buttons.pressed(BTN_LEFT) && select>0)
+      {
+        gb.sound.playTick();
+        select--;
+      }
+      else if(gb.buttons.pressed(BTN_UP))
+      {
+        gb.sound.playTick();
+        if(select==0)
+        {
+          day_of_week++;
+          if(day_of_week>7)
+            day_of_week=1;
+        }
+        if(select==1)
+        {
+          day_of_month++;
+          if(day_of_month>31)
+            day_of_month=1;
+        }
+        if(select==2)
+        {
+          month++;
+          if(month>12)
+            month=1;
+        }
+        if(select==3)
+        {
+          year++;
+          if(year>199)
+            year=0;
+        }
+      }
+      else if(gb.buttons.pressed(BTN_DOWN))
+      {
+        gb.sound.playTick();
+        if(select==0)
+        {
+          day_of_week--;
+          if(day_of_week==0)
+            day_of_week=7;
+        }
+        if(select==1)
+        {
+          day_of_month--;
+          if(day_of_month==0)
+            day_of_month=31;
+        }
+        if(select==2)
+        {
+          month--;
+          if(month==0)
+            month=12;
+        }
+        if(select==3)
+        {
+          if(year-1<0)
+            year=199;
+          else
+            year--;
+        }
+      }
+    }
+  }
+}
+
 
 void setup() {
   gb.begin();
   Wire.begin();
-  gb.titleScreen(F("Clockuino"));
 }
 
 void loop()
@@ -271,7 +370,7 @@ void loop()
           
           case 1:
           {
-            //SET_UP DATE
+            set_Date();
           }
           break;
           

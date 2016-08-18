@@ -64,21 +64,21 @@ uint8_t DS3231::getHour(bool *mode12h, bool *pm)
 	uint8_t result=Wire.read();
 
 	//If 12-hour mode
-	if(result & 0b0100000)
+	if(result & 0b01000000)
 	{
 		*mode12h=true;
-		if(result & 0b0010000)
+		if(result & 0b00100000)
 		{
 			*pm=true;
 		}
 		else
 			*pm=false;
-		return bcdToDec(result & 0b0001111);
+		return bcdToDec(result & 0b00011111);
 	}
 	else
 	{
 		*mode12h=false;
-		return bcdToDec(result & 0b0011111);
+		return bcdToDec(result & 0b00111111);
 	}
 }
 
@@ -99,21 +99,21 @@ int DS3231::getCurrentTime(bool *mode12h, bool *pm, uint8_t *hour, uint8_t *minu
 	uint8_t resultHour=Wire.read();
 
 	//If 12-hour mode
-	if(resultHour & 0b0100000)
+	if(resultHour & 0b01000000)
 	{
 		*mode12h=true;
-		if(resultHour & 0b0010000)
+		if(resultHour & 0b00100000)
 		{
 			*pm=true;
 		}
 		else
 			*pm=false;
-		*hour=bcdToDec(resultHour & 0b0001111);
+		*hour=bcdToDec(resultHour & 0b00011111);
 	}
 	else
 	{
 		*mode12h=false;
-		*hour=bcdToDec(resultHour & 0b0011111);
+		*hour=bcdToDec(resultHour & 0b00111111);
 	}
 }
 
@@ -265,9 +265,9 @@ int DS3231::getDate(uint8_t *dayOfWeek, uint8_t *dayOfMonth, uint8_t *month, uin
 	*dayOfMonth=bcdToDec(Wire.read());
 	uint8_t byteMonth=Wire.read();
 	bool century=false;
-	if(byteMonth&0b1000000)
+	if(byteMonth&0b10000000)
 		century=true;
-	*month=bcdToDec(byteMonth&0b0111111);
+	*month=bcdToDec(byteMonth&0b01111111);
 	*year=bcdToDec(Wire.read());
 	if (century)
 		*year=*year+100;
@@ -303,7 +303,7 @@ bool DS3231::setMonth(const uint8_t month)
 
 	Wire.requestFrom(I2C_ADRESS,1);
 	detected=true;
-	uint8_t oldByte=(Wire.read()&0b1000000);
+	uint8_t oldByte=(Wire.read()&0b10000000);
 
 	Wire.beginTransmission(I2C_ADRESS);
 	Wire.write(uint8_t(0x05));
@@ -333,11 +333,11 @@ bool DS3231::setYear(const uint8_t year)
 
 		Wire.requestFrom(I2C_ADRESS,1);
 		detected=true;
-		uint8_t oldByte=(Wire.read()&0b0111111);
+		uint8_t oldByte=(Wire.read()&0b01111111);
 		yearCopy=yearCopy-100;
 		Wire.beginTransmission(I2C_ADRESS);
 		Wire.write(uint8_t(0x05));
-		Wire.write(0b1000000 | oldByte);
+		Wire.write(0b10000000 | oldByte);
 		if(Wire.endTransmission())
     {
       detected=false;
