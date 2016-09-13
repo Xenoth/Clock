@@ -241,7 +241,7 @@ uint8_t DS3231::getYear()
 	
 	detected=true;
 	bool century=false;
-	if((Wire.read())&0b1000000)
+	if((Wire.read())&0b10000000)
 		century=true;
 	uint8_t year=bcdToDec(Wire.read());
 	if (century)
