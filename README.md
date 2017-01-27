@@ -14,3 +14,6 @@ Of cours it also require a Gamebuino.
 
 ## Future
 Have to finish the DS3231's classes and the main code to provides a full app.
+
+## Authors 
+* BAILLEUX Pol
