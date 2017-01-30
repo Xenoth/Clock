@@ -3,7 +3,7 @@ Clockuino is clock app for Gamebuino, a cheap console made with Arduino.<br>
 It does works pretty well actualy, but still need some improvement.
 
 ## Use
-Gamebuino Hardware : http://gamebuino.com/
+Gamebuino Hardware : http://gamebuino.com/<br>
 Gamebuino library : https://github.com/Rodot/Gamebuino
 
 ## Requirement
